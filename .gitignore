@@ -1,0 +1,28 @@
+# Ignore node_modules in client and server
+client/node_modules/
+server/node_modules/
+
+# Ignore env files in both folders
+client/.env
+server/.env
+*.env
+
+# Ignore client build outputs
+client/build/
+client/.next/
+client/.parcel-cache/
+
+# Ignore server build outputs
+server/dist/
+server/build/
+
+# Logs and common files
+*.log
+logs/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Optional coverage, test results
+coverage/
+test-results/
