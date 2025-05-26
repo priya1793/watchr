@@ -8,6 +8,9 @@ export interface IWatchlistItem extends Document {
   year: string;
   posterPath: string;
   watched: boolean;
+  status?: "Watching" | "Watched" | "Plan to Watch";
+  note?: string;
+  tags?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +27,13 @@ const watchlistItemSchema = new Schema<IWatchlistItem>(
     year: { type: String },
     posterPath: { type: String },
     watched: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["Watching", "Watched", "Plan to Watch"],
+      default: "Plan to Watch",
+    },
+    note: { type: String },
+    tags: [{ type: String }],
   },
   { timestamps: true }
 );

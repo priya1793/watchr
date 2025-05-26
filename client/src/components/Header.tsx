@@ -1,20 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAuthStore } from "../store/authStore";
 
 const Header = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const token = useAuthStore((state) => state.token);
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
+    logout();
     navigate("/login");
   };
 
@@ -29,7 +24,7 @@ const Header = () => {
 
       <div className="ml-auto flex gap-4">
         <ThemeToggle />
-        {!isAuthenticated ? (
+        {!token ? (
           <>
             <Link to="/login" className="text-primary font-semibold">
               Login
@@ -41,7 +36,8 @@ const Header = () => {
         ) : (
           <Button
             onClick={handleLogout}
-            className="text-white-500 font-semibold"
+            variant="ghost"
+            className="bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800"
           >
             Logout
           </Button>

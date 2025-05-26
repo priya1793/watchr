@@ -12,5 +12,7 @@ export interface WatchlistMovie {
   title: string;
   year: string;
   posterPath: string;
-  watched?: boolean;
+  status?: "Watching" | "Watched" | "Plan to Watch";
+  note?: string;
+  tags?: string[];
 }

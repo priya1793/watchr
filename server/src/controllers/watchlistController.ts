@@ -15,7 +15,7 @@ export const getWatchlist = async (req: AuthRequest, res: Response) => {
 export const addToWatchlist = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
-    const { movieId, title, year, posterPath } = req.body;
+    const { movieId, title, year, posterPath, status, note, tags } = req.body;
 
     if (!movieId || !title) {
       res.status(400).json({ error: "movieId and title are required" });
@@ -27,17 +27,19 @@ export const addToWatchlist = async (req: AuthRequest, res: Response) => {
       res.status(400).json({ error: "Movie already in watchlist" });
     }
 
-    const item = new WatchlistItem({
+    const newItem = new WatchlistItem({
       user: userId,
       movieId,
       title,
       year,
       posterPath,
-      watched: false,
+      status: status || "Plan to Watch",
+      note: note || "",
+      tags: tags || [],
     });
 
-    await item.save();
-    res.status(201).json(item);
+    await newItem.save();
+    res.status(201).json(newItem);
   } catch (err) {
     res.status(500).json({ error: "Failed to add to watchlist" });
   }
@@ -67,28 +69,27 @@ export const removeFromWatchlist = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateWatchedStatus = async (req: AuthRequest, res: Response) => {
+export const updateWatchedItem = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
-    const { watched } = req.body;
+    const { movieId } = req.params;
+    const { status, note, tags } = req.body;
 
-    if (typeof watched !== "boolean") {
-      res.status(400).json({ error: "'watched' boolean is required" });
+    const item = await WatchlistItem.findOne({ user: userId, movieId });
+
+    if (!item) {
+      res.status(404).json({ error: "Movie not found in watchlist" });
+      return;
     }
 
-    const updated = await WatchlistItem.findOneAndUpdate(
-      { _id: id, user: userId },
-      { watched },
-      { new: true }
-    );
+    if (status) item.status = status;
+    if (note !== undefined) item.note = note;
+    if (tags !== undefined) item.tags = tags;
 
-    if (!updated) {
-      res.status(404).json({ error: "Watchlist item not found" });
-    }
-
-    res.json(updated);
+    await item.save();
+    res.json(item);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to update watchlist item" });
   }
 };

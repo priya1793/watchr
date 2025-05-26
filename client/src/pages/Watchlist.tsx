@@ -4,7 +4,13 @@ import type { WatchlistMovie } from "../types";
 import { motion } from "framer-motion";
 
 function Watchlist() {
-  const { watchlist, removeMovie, toggleWatched } = useWatchlist();
+  const { watchlist, removeMovie, updateMovieDetails } = useWatchlist();
+
+  const toggleWatchStatus = (movieId: string, currentStatus?: string) => {
+    const newStatus: "Watched" | "Plan to Watch" =
+      currentStatus === "Watched" ? "Plan to Watch" : "Watched";
+    updateMovieDetails(movieId, { status: newStatus });
+  };
 
   return (
     <motion.div
@@ -22,9 +28,12 @@ function Watchlist() {
           <MovieCard
             key={movie._id}
             movie={movie}
-            watched={movie.watched}
-            onToggleWatched={toggleWatched}
             onRemove={removeMovie}
+            onStatusChange={
+              () => toggleWatchStatus(movie.movieId, movie.status)
+              // watched={movie.watched}
+              // onToggleWatched={toggleWatchedStatus}
+            }
           />
         ))}
       </div>
